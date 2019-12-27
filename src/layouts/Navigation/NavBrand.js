@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const NavBrand = props => (
   <div className='navbar-brand'>
-    <Link className='navbar-item' href='/'>
+    <Link className='navbar-item' to='/home'>
       <strong> PunRetro</strong>
     </Link>
 

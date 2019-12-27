@@ -3,6 +3,8 @@ import PageHeader from '../../components/PageHeader';
 import classes from './Dashboard.module.css';
 import Modal from '../../UI/Modal/Modal';
 import Hoc from '../../hoc/Hoc';
+import CreateButton from './Board/CreateBoard/CreateBoard';
+import BoardTiles from './Board/BoardTiles/BoardTiles';
 
 class Dashboard extends React.Component {
   state = {
@@ -11,7 +13,7 @@ class Dashboard extends React.Component {
 
   openCreateModal = () => {
     this.setState({ show: !this.state.show });
-  }
+  };
 
   render() {
     return (
@@ -25,8 +27,8 @@ class Dashboard extends React.Component {
                   onClick={this.openCreateModal}
                   type='button'
                   className={`button is-black is-outlined is-pulled-right ${classes.CreateButton}`}>
-                  <span class='icon'>
-                    <i class='fas fa-plus'></i>
+                  <span className='icon'>
+                    <i className='fas fa-plus'></i>
                   </span>
                   <span>CREATE BOARD</span>
                 </button>
@@ -34,8 +36,11 @@ class Dashboard extends React.Component {
             </div>
           </div>
         </section>
+
+        <BoardTiles />
+
         <Modal title='Create Board' show={this.state.show}>
-          This is modal
+          <CreateButton />
         </Modal>
       </Hoc>
     );
