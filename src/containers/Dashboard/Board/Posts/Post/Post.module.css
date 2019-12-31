@@ -1,0 +1,38 @@
+.Post {
+    font-size: 15px;;
+}
+
+.PostContainer:hover {
+    border-radius: 4px;
+    background-color: rgba(55, 53, 47, 0.13);
+    /* background-color: #d5eef8;
+    color: #000;
+    border-radius: 4px; */
+
+    /* background-color: #3F51B5;
+    color: #fff;
+    border-radius: 4px; */
+}
+
+.DateTime {
+    font-size: 13px;
+    margin-top: 5px;
+    display: inline-block;
+    padding-right: 5px;
+}
+
+.PostControls {
+    display: none;
+    justify-content: space-between;
+    margin-bottom: 0 !important;
+}
+
+.PostContainer:hover .PostControls {
+    display: flex;
+}
+
+.UserName {
+    font-size: 13px;
+    font-weight: 400;
+    font-style: italic;
+}

@@ -3,3 +3,8 @@ body {
     font-family: 'Roboto', sans-serif;
     /* font-family: 'Open Sans', sans-serif; */
 }
+
+textarea {
+    height: 80px !important;
+    resize: none;
+}
