@@ -1,9 +1,13 @@
 import React from 'react';
 import AddPost from './Posts/AddPost/AddPost';
 import Posts from './Posts/Posts';
+import { withRouter } from 'react-router-dom';
+import API from '../../../Helpers/api';
+import classes from './Board.module.css';
 
 class Board extends React.Component {
   state = {
+    boardData: [],
     posts: [
       {
         id: 1,
@@ -29,51 +33,54 @@ class Board extends React.Component {
     ],
   };
 
-  submitPostHandler = (post) => {
+  submitPostHandler = post => {
     const currentState = this.state.posts;
     const data = {
       id: Math.random(3),
       post: post,
       user: 'Hemant',
       dateTime: new Date().toLocaleString(),
-      type: 'went-well'
-    }
+      type: 'went-well',
+    };
 
     currentState.push(data);
-    this.setState({posts: currentState});
-  }
+    this.setState({ posts: currentState });
+  };
 
-  deletePostHandler = (postId) => {
+  deletePostHandler = postId => {
     const currentState = [...this.state.posts];
-    this.setState({posts: currentState.filter(post => post.id !== postId)});
+    this.setState({ posts: currentState.filter(post => post.id !== postId) });
+  };
+
+  componentDidMount() {
+    const boardId = this.props.match.params.id;
+    API.get(`boards/fetchById/${boardId}`).then(res => {
+      this.setState({ boardData: res.data });
+      console.log('this.state.boardData', this.state.boardData[0].name);
+    });
   }
 
   render() {
+    // console.log('id', )
     return (
       <section className='section'>
         <div className='container'>
+          <h1 className='title'>{this.state.boardData.length > 0 && this.state.boardData[0].name}</h1>
+          <p className={`subtitle ${classes.CreatedBy}`}>
+            Created by: {this.state.boardData.length > 0 && this.state.boardData[0].username} @{' '}
+            {this.state.boardData.length > 0 && this.state.boardData[0].created_at}
+          </p>
           <div className='columns'>
-            <div className='column'>
-              <nav className='panel'>
-                <p className='panel-heading'>Went Well</p>
-                <Posts posts={this.state.posts} deletePostHandler={this.deletePostHandler}/>
-                <AddPost onSubmitPost={this.submitPostHandler}/>
-              </nav>
-            </div>
-            <div className='column'>
-              <nav className='panel'>
-                <p className='panel-heading'>To Improve</p>
-                <Posts posts={this.state.posts} deletePostHandler={this.deletePostHandler}/>
-                <AddPost onSubmitPost={this.submitPostHandler}/>
-              </nav>
-            </div>
-            <div className='column'>
-              <nav className='panel'>
-                <p className='panel-heading'>Action Items</p>
-                <Posts posts={this.state.posts} deletePostHandler={this.deletePostHandler}/>
-                <AddPost onSubmitPost={this.submitPostHandler}/>
-              </nav>
-            </div>
+            {this.state.boardData.length > 0 &&
+              this.state.boardData[0].template_columns.map(column => (
+                <div className='column' key={column.id}>
+                  <nav className='panel'>
+                    <p className='panel-heading'>{column.name}</p>
+                    <Posts posts={this.state.posts} deletePostHandler={this.deletePostHandler} />
+                    <AddPost onSubmitPost={this.submitPostHandler} />
+                  </nav>
+                </div>
+              ))}
           </div>
         </div>
       </section>
@@ -81,4 +88,4 @@ class Board extends React.Component {
   }
 }
 
-export default Board;
+export default withRouter(Board);

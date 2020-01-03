@@ -1,0 +1,7 @@
+.CustomNotification {
+    position: fixed;
+    z-index: 9999;
+    top: 10px;
+    right: 10px;
+    max-width: 300px;
+  }

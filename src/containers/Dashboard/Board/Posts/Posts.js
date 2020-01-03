@@ -6,7 +6,7 @@ const Posts = (props) => {
   return (
     <Hoc>
       {props.posts.map((post, idx) => {
-        return <Post {...post} key={props.id} deletePost={props.deletePostHandler}/>
+        return <Post {...post} key={post.id} deletePost={props.deletePostHandler}/>
       })}
     </Hoc>
   )

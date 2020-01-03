@@ -2,7 +2,7 @@ import React from 'react';
 import classes from './Post.module.css';
 
 const Post = props => (
-  <div className={`panel-block ${classes.PostContainer}`} key={props.id}>
+  <div className={`panel-block ${classes.PostContainer}`}>
     <div className={`content ${classes.Post}`}>
       {props.post}
       <br />

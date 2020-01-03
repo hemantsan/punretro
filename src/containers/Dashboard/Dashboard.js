@@ -5,15 +5,21 @@ import Modal from '../../UI/Modal/Modal';
 import Hoc from '../../hoc/Hoc';
 import CreateButton from './Board/CreateBoard/CreateBoard';
 import BoardTiles from './Board/BoardTiles/BoardTiles';
+import API from '../../Helpers/api';
 
 class Dashboard extends React.Component {
   state = {
     show: false,
+    boards: [],
   };
 
   openCreateModal = () => {
     this.setState({ show: !this.state.show });
   };
+
+  componentDidMount() {
+    API.get('boards/fetchByUser/1').then(res => this.setState({ boards: res.data }));
+  }
 
   render() {
     return (
@@ -37,7 +43,7 @@ class Dashboard extends React.Component {
           </div>
         </section>
 
-        <BoardTiles />
+        {this.state.boards.length > 0 && <BoardTiles {...this.state.boards} />}
 
         <Modal title='Create Board' show={this.state.show}>
           <CreateButton />
