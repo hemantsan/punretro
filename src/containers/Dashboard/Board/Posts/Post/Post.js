@@ -2,16 +2,16 @@ import React from 'react';
 import classes from './Post.module.css';
 
 const Post = props => (
-  <div className={`panel-block ${classes.PostContainer}`}>
+  <div className={`panel-block ${classes.PostContainer} post__${props.id}`}>
     <div className={`content ${classes.Post}`}>
-      {props.post}
+      {props.content}
       <br />
       <div className={`content ${classes.PostControls}`}>
         <time dateTime='12-27-2019' className={`${classes.DateTime}`}>
-          {props.dateTime}
+          {props.created_at}
         </time>
         <div className='buttons has-addons'>
-          <button className='button is-small'>
+          <button className='button is-small' onClick={() => props.editPost(props.id)}>
             <span className='icon is-small'>
               <i className='fas fa-align-left'></i>
             </span>
@@ -27,7 +27,7 @@ const Post = props => (
         </div>
       </div>
       <div className='content'>
-        <span className={classes.UserName}>{props.user}</span>
+        <span className={classes.UserName}>{props.username}</span>
       </div>
     </div>
   </div>

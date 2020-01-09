@@ -49,33 +49,62 @@ app.post('/boards', (req, res) => {
 });
 
 app.get('/boards/fetchByUser/:id', (req, res) => {
-  mysqlConnection.query(`SELECT boards.*, DATE_FORMAT(boards.created_at, '%m/%d/%Y %h:%i %p') as created_at, users.username FROM boards inner join users on users.id = boards.created_by where boards.created_by = ${req.params.id}`, (err, rows, fields) => {
-    if (!err) res.send(rows);
-    else console.log(err);
-  });
+  mysqlConnection.query(
+    `SELECT boards.*, DATE_FORMAT(boards.created_at, '%m/%d/%Y %h:%i %p') as created_at, users.username FROM boards inner join users on users.id = boards.created_by where boards.created_by = ${req.params.id}`,
+    (err, rows, fields) => {
+      if (!err) res.send(rows);
+      else console.log(err);
+    }
+  );
 });
 
 app.get('/boards/fetchById/:id', (req, res) => {
   let response = [];
   let templateColumnsQuery = '';
-  mysqlConnection.query(`
+  mysqlConnection.query(
+    `
     SELECT boards.*,
     DATE_FORMAT(boards.created_at, '%m/%d/%Y %h:%i %p') as created_at,
     users.username
     FROM boards
     inner join users on users.id = boards.created_by
     where boards.id = ${req.params.id}
-    `, (err, rows, fields) => {
-    if (!err) {
-      response = rows;
-      templateColumnsQuery = `SELECT * FROM template_columns where template_columns.template = ${response[0].template}`;
-      mysqlConnection.query(templateColumnsQuery, (err, rows, fields) => {
-        if (!err) response[0]['template_columns'] = rows;
-        else console.log(err);
-        res.send(response);
-      });
+    `,
+    (err, rows, fields) => {
+      if (!err) {
+        response = rows;
+        templateColumnsQuery = `SELECT * FROM template_columns where template_columns.template = ${response[0].template}`;
+        mysqlConnection.query(templateColumnsQuery, (err, rows, fields) => {
+          if (!err) {
+            response[0]['template_columns'] = rows;
+            let columnPostQuery = `SELECT posts.*, DATE_FORMAT(posts.created_at, '%m/%d/%Y %h:%i %p') as created_at, users.username FROM posts inner join users on users.id = posts.user_id where posts.board_id = ${response[0].id}`;
+              mysqlConnection.query(columnPostQuery, (err, rows, fields) => {
+                response[0]['posts'] = rows;
+                res.send(response);
+              });
+          } else { console.log(err); }
+        });
+      }
     }
-    // else console.log(err);
-  });
-  
+  );
+});
+
+app.post('/boards/submitPost', (req, res) => {
+  mysqlConnection.query(
+    `insert into posts (content, user_id, board_id, template_id, template_column_id) values ('${req.body.content}', '${req.body.user_id}', '${req.body.board_id}', '${req.body.template_id}', '${req.body.template_column_id}')`,
+    (err, result) => {
+      if (!err) res.send(result);
+      else console.log(err);
+    }
+  );
+});
+
+app.delete('/boards/deletePost/:id', (req, res) => {
+  mysqlConnection.query(
+    `delete from posts where id = ${req.params.id}`,
+    (err, result) => {
+      if (!err) res.send(result);
+      else console.log(err);
+    }
+  );
 });

@@ -12,7 +12,7 @@ class AddPost extends React.Component {
   }
 
   submit(flag) {
-    this.props.onSubmitPost(this.state.post);
+    this.props.onSubmitPost(this.state.post, this.props.templateColumnId);
     this.setState({ toggleControls: flag });
   }
 

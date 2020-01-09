@@ -4,80 +4,75 @@ import Posts from './Posts/Posts';
 import { withRouter } from 'react-router-dom';
 import API from '../../../Helpers/api';
 import classes from './Board.module.css';
+import { Link } from 'react-router-dom';
 
 class Board extends React.Component {
   state = {
     boardData: [],
-    posts: [
-      {
-        id: 1,
-        post: 'Knowledge sharing (UI) of various newly created projects went well.',
-        user: 'Hemant sankhla',
-        dateTime: '1 Jan 2016, 11:09 PM',
-        type: 'went-well',
-      },
-      {
-        id: 2,
-        post: 'Part - 1 of Cross Carline is on Production.  Good Communication with onshore POC (Rex)',
-        user: 'Dhanraj',
-        dateTime: '1 Jan 2016, 11:09 PM',
-        type: 'to-improve',
-      },
-      {
-        id: 3,
-        post: 'Toyota Care app release went well. Thanks Upendra for support and coordination.',
-        user: 'Gaurav rathod',
-        dateTime: '1 Jan 2016, 11:09 PM',
-        type: 'action-items',
-      },
-    ],
+    posts: [],
   };
 
-  submitPostHandler = post => {
+  submitPostHandler = (post, templateColumnId) => {
     const currentState = this.state.posts;
     const data = {
-      id: Math.random(3),
-      post: post,
-      user: 'Hemant',
-      dateTime: new Date().toLocaleString(),
-      type: 'went-well',
+      content: post,
+      user_id: 1,
+      board_id: this.state.boardData[0].id,
+      template_id: this.state.boardData[0].template,
+      template_column_id: templateColumnId,
     };
 
-    currentState.push(data);
-    this.setState({ posts: currentState });
+    API.post(`boards/submitPost/`, data).then(res => {
+      currentState.push(data);
+      this.setState({ posts: currentState });
+    });
   };
 
   deletePostHandler = postId => {
     const currentState = [...this.state.posts];
-    this.setState({ posts: currentState.filter(post => post.id !== postId) });
+    API.delete(`boards/deletePost/${postId}`).then(res => {
+      this.setState({ posts: currentState.filter(post => post.id !== postId) });
+    });
   };
+
+  editPostHandler = postId => {
+    const currentPostState = [...this.state.posts];
+
+  }
 
   componentDidMount() {
     const boardId = this.props.match.params.id;
     API.get(`boards/fetchById/${boardId}`).then(res => {
       this.setState({ boardData: res.data });
-      console.log('this.state.boardData', this.state.boardData[0].name);
+      this.setState({ posts: this.state.boardData[0].posts });
     });
   }
 
   render() {
-    // console.log('id', )
     return (
       <section className='section'>
         <div className='container'>
-          <h1 className='title'>{this.state.boardData.length > 0 && this.state.boardData[0].name}</h1>
-          <p className={`subtitle ${classes.CreatedBy}`}>
-            Created by: {this.state.boardData.length > 0 && this.state.boardData[0].username} @{' '}
-            {this.state.boardData.length > 0 && this.state.boardData[0].created_at}
-          </p>
+          <div className='content'>
+            <Link to='/dashboard'>
+              <span className='icon'>
+                <i className='fas fa-arrow-left'></i>
+              </span>{' '}
+              <span> Back to dashboard</span>
+            </Link>
+            <h1 className={`title ${classes.Title}`}>{this.state.boardData.length > 0 && this.state.boardData[0].name}</h1>
+            <p className={`subtitle ${classes.CreatedBy}`}>
+              Created by: {this.state.boardData.length > 0 && this.state.boardData[0].username} @{' '}
+              {this.state.boardData.length > 0 && this.state.boardData[0].created_at}
+            </p>
+          </div>
           <div className='columns'>
             {this.state.boardData.length > 0 &&
               this.state.boardData[0].template_columns.map(column => (
                 <div className='column' key={column.id}>
                   <nav className='panel'>
                     <p className='panel-heading'>{column.name}</p>
-                    <Posts posts={this.state.posts} deletePostHandler={this.deletePostHandler} />
-                    <AddPost onSubmitPost={this.submitPostHandler} />
+                    <Posts posts={this.state.posts} templateColumnId={column.id} deletePostHandler={this.deletePostHandler} />
+                    <AddPost onSubmitPost={this.submitPostHandler} templateColumnId={column.id}/>
                   </nav>
                 </div>
               ))}
