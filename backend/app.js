@@ -93,8 +93,28 @@ app.post('/boards/submitPost', (req, res) => {
   mysqlConnection.query(
     `insert into posts (content, user_id, board_id, template_id, template_column_id) values ('${req.body.content}', '${req.body.user_id}', '${req.body.board_id}', '${req.body.template_id}', '${req.body.template_column_id}')`,
     (err, result) => {
-      if (!err) res.send(result);
-      else console.log(err);
+      if (!err) {
+        mysqlConnection.query(`SELECT posts.*, DATE_FORMAT(posts.created_at, '%m/%d/%Y %h:%i %p') as created_at, users.username FROM posts inner join users on users.id = posts.user_id where posts.id = ${result.insertId}`, (err, rows, fields) => {
+          if (!err) res.send(rows);
+          else console.log(err);
+        });
+        // res.send(result);
+      } else console.log(err);
+    }
+  );
+});
+
+app.put('/boards/updatePost', (req, res) => {
+  mysqlConnection.query(
+    `update posts SET content = '${req.body.content}' where id = ${req.body.id}`,
+    (err, result) => {
+      if (!err) {
+        mysqlConnection.query(`SELECT posts.*, DATE_FORMAT(posts.created_at, '%m/%d/%Y %h:%i %p') as created_at, users.username FROM posts inner join users on users.id = posts.user_id where posts.id = ${req.body.id}`, (err, rows, fields) => {
+          if (!err) res.send(rows);
+          else console.log(err);
+        });
+        // res.send(result);
+      } else console.log(err);
     }
   );
 });

@@ -2,14 +2,18 @@ import React from 'react';
 import Hoc from '../../../../hoc/Hoc';
 import Post from '../Posts/Post/Post';
 
-const Posts = (props) => {
+const Posts = props => {
   return (
     <Hoc>
       {props.posts.map((post, idx) => {
-        return post.template_column_id === props.templateColumnId && <Post {...post} key={post.id} deletePost={props.deletePostHandler}/>
+        return (
+          post.template_column_id === props.templateColumnId && (
+            <Post {...post} key={post.id} deletePost={props.deletePostHandler} editPost={props.editPostHandler} />
+          )
+        );
       })}
     </Hoc>
-  )
+  );
 };
 
 export default Posts;
